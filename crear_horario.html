@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horario de Estudiante</title>
+  <style>
+    .contenedor{
+        padding: 5px 10px;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .horario {
+      display: grid;
+      grid-template-columns: 100px repeat(5, 1fr);
+      grid-template-rows: repeat(7, minmax(40px, auto));
+      gap: 1px;
+    }
+
+    .horario > div {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .dias {
+      font-weight: bold;
+    }
+
+    .hora {
+      font-weight: bold;
+    }
+
+    .receso {
+      background-color: #b3b3b3;
+      grid-column: 2 / span 5; 
+    }
+
+    .receso-text {
+      pointer-events: none; /* Esto evita que el texto del receso sea seleccionable */
+    }
+      /* Estilos para la ventana modal */
+      .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0,0,0);
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    /* Estilos para el botón de cerrar */
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="contenedor">
+<div class="horario">
+  <div class="dias"></div>
+  <div class="dias">Lunes</div>
+  <div class="dias">Martes</div>
+  <div class="dias">Miércoles</div>
+  <div class="dias">Jueves</div>
+  <div class="dias">Viernes</div>
+
+  <div class="hora">8:00 - 9:00</div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+
+  <div class="hora">9:00 - 10:00</div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+
+  <div class="hora" rowspan="5">10:00 - 10:30</div>
+  <div class="receso" rowspan="5"><div class="receso-text">Receso</div></div>
+
+  <div class="hora">10:30 - 11:30</div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+
+  <div class="hora">11:30 - 12:30</div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+  <div class="clase"><input type="text" placeholder="Clase" onclick="mostrarModal(this)"></div>
+
+</div>
+</div>
+
+<!-- Definición de la ventana modal -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="cerrarModal()">&times;</span>
+    <h2>Opciones</h2>
+    <ul>
+      <li>Tipo_Horario</li>
+      <li>Hora_Entrada</li>
+      <li>Hora_Salida</li>
+      <li>Estado_Horario</li>
+      <li>Id_Empleado</li>
+      <li>Id_Asignatura
+        <select id="asignaturas">
+          <option value="">Selecciona una asignatura</option>
+          <option value="Asignatura 1">Asignatura 1</option>
+          <option value="Asignatura 2">Asignatura 2</option>
+          <option value="Asignatura 3">Asignatura 3</option>
+          <option value="Asignatura 4">Asignatura 4</option>
+        </select>
+      </li>
+      <li>Id_Periodo</li>
+      <li>Id_Carrera</li>
+      <li>Id_Modalidad</li>
+    </ul>
+    <button onclick="guardarSeleccion()">Guardar</button>
+  </div>
+</div>
+
+<script>
+var campoSeleccionado; // Variable global para almacenar el campo de texto seleccionado
+
+// Función para mostrar la ventana modal y recordar el campo de texto seleccionado
+function mostrarModal(input) {
+  campoSeleccionado = input.parentNode; // Almacenar el campo seleccionado (el div que contiene el input)
+  var modal = document.getElementById("myModal");
+  modal.style.display = "block";
+}
+
+// Función para cerrar la ventana modal
+function cerrarModal() {
+  var modal = document.getElementById("myModal");
+  modal.style.display = "none";
+}
+
+// Función para guardar la selección y colocarla en el campo de texto correspondiente
+function guardarSeleccion() {
+  var asignaturaSeleccionada = document.getElementById("asignaturas").value;
+  campoSeleccionado.querySelector('input').value = asignaturaSeleccionada; // Establecer el valor en el campo de texto seleccionado
+  cerrarModal(); // Cerrar la ventana modal
+}
+</script>
+</body>
+</html>
